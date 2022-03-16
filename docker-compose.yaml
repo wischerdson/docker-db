@@ -1,0 +1,29 @@
+version: "3"
+
+networks:
+  default:
+    driver: bridge
+    name: database
+
+services:
+  mariadb:
+    image: mariadb:latest
+    volumes:
+      - ./.data/mariadb:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD:
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin:fpm-alpine
+    environment:
+      - PMA_HOST: mariadb
+      - PMA_PORT: 3306
+    ports:
+      - 8080:80
+    restart: unless-stopped
+    links:
+      - mariadb
